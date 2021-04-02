@@ -84,8 +84,7 @@
                                                            data-target="#viewItems">View Items</i>
                                                         </a>
 
-                                                        <a href="#" class="dropdown-item" onclick="approvedOrder({{$booking->idmaster_booking}})">Mark as Accepted</i>
-                                                     </a>
+                                                      
                                                       
                                                     </div>
                                                 </div>

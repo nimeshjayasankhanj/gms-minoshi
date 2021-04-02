@@ -9,6 +9,7 @@ use App\MainCategory;
 use App\MasterBooking;
 use App\Product;
 use App\Stock;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,8 +52,9 @@ class BookingController extends Controller
         public function acceptedWorksIndex(){
 
             $acceptedBooking=MasterBooking::where('status',1)->get();
+            $drivers=User::where('user_role_iduser_role',3)->get();
 
-            return view('tasks.accepted-works',['title'=>'Accepted Works','acceptedBooking'=>$acceptedBooking]);
+            return view('tasks.accepted-works',['title'=>'Accepted Works','acceptedBooking'=>$acceptedBooking,'drivers'=>$drivers]);
      
         }
 
@@ -65,10 +67,17 @@ class BookingController extends Controller
             return response()->json(['success'=>'Booking Completed successfully']);
         }
 
+        public function deliveredWorksIndex(){
+
+            $completedBooking=MasterBooking::where('status',2)->get();
+
+            return view('tasks.delivered-works',['title'=>'Delivered Works','completedBooking'=>$completedBooking]);
+     
+        }
 
         public function completeWorksIndex(){
 
-            $completedBooking=MasterBooking::where('status',2)->get();
+            $completedBooking=MasterBooking::where('status',3)->get();
 
             return view('tasks.completed-works',['title'=>'Completed Works','completedBooking'=>$completedBooking]);
      
@@ -119,6 +128,31 @@ class BookingController extends Controller
             $booking = MasterBooking::find(intval($id));
 
         return view('print.print-booking')->with(["booking" => $booking]);
+        }
+
+
+        public function assignDriver(Request $request){
+
+            $driver=$request['driver'];
+            $bookingId=$request['bookingId'];
+
+            $validator = \Validator::make($request->all(), [
+
+                'driver' => 'required',
+            ], [
+                'driver.required' => 'Driver should be provided!',
+               
+            ]); if ($validator->fails()) {
+                return response()->json(['errors' =>$validator->errors()]);
+    
+            }
+
+            $save=MasterBooking::find($bookingId);
+            $save->driver=$driver;
+            $save->save();
+
+            return response()->json(['success' => 'Driver assigned successfully.']);
+    
         }
 
 }

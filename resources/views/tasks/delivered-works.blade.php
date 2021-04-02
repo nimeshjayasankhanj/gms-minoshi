@@ -64,14 +64,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @if(isset($pendingBooking))
-                                @if(count($pendingBooking)>0)
-                                    @foreach($pendingBooking as $booking)
+                                @if(isset($completedBooking))
+                                @if(count($completedBooking)>0)
+                                    @foreach($completedBooking as $completed)
                                         <tr>
-                                            <td>{{ str_pad($booking->idmaster_booking,5,'0',STR_PAD_LEFT) }}</td>
-                                            <td>{{$booking->User->first_name}} {{$booking->User->last_name}}</td>
-                                            <td>{{$booking->created_at->toDateString()}}</td>
-                                            <td>{{number_format($booking->total,2)}}</td>
+                                            <td>{{ str_pad($completed->idmaster_booking,5,'0',STR_PAD_LEFT) }}</td>
+                                            <td>{{$completed->User->first_name}} {{$completed->User->last_name}}</td>
+                                            <td>{{$completed->created_at->toDateString()}}</td>
+                                            <td>{{number_format($completed->total,2)}}</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-primary waves-effect btn-sm dropdown-toggle" type="button"
@@ -82,13 +82,11 @@
                                                     <div class="dropdown-menu"
                                                          aria-labelledby="dropdownMenuButton">
                                                         <a href="#" class="dropdown-item" data-toggle="modal"
-                                                           data-id="{{$booking->idmaster_booking}}" id="bookingId"
+                                                           data-id="{{$completed->idmaster_booking}}" id="bookingId"
                                                            data-target="#viewItems">View Items</i>
                                                         </a>
 
-                                                        <a href="#" class="dropdown-item" onclick="approvedOrder({{$booking->idmaster_booking}})">Mark as Accepted</i>
-                                                     </a>
-                                                      
+                                                       
                                                     </div>
                                                 </div>
                                             </td>
@@ -149,7 +147,6 @@
         </div>
     </div>
 </div>
-
 @include('includes/footer_start')
 
 <!-- Plugins js -->
@@ -222,52 +219,7 @@
     });
 
 
-    function approvedOrder(id) {
-
-        swal({
-            title: 'Do you really want to accepted this Order?',
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Accepted!',
-            cancelButtonText: 'No, cancel!',
-            confirmButtonClass: 'btn btn-primary waves-effect',
-            cancelButtonClass: 'btn btn-danger waves-effect',
-            buttonsStyling: false
-        }).then(function () {
-            $.ajax({
-
-                type: 'POST',
-
-                url: " {{ route('approvedOrder') }}",
-
-                data: {id: id},
-
-                success: function (data) {
-
-                    notify({
-                        type: "success", //alert | success | error | warning | info
-                        title: 'BOOKING APPROVED',
-                        autoHide: true, //true | false
-                        delay: 2500, //number ms
-                        position: {
-                            x: "right",
-                            y: "top"
-                        },
-                        icon: '<img src="{{ URL::asset('assets/images/correct.png')}}" />',
-
-                        message: data.success,
-                    });
-                    
-                    location.reload();
-                }
-            })
-
-
-            }), function () {
-
-            }
-
-}
+    
 
 </script>
 

@@ -14,18 +14,18 @@ class UserController extends Controller
 
         return view('employee.add-employee',['title'=>"Add Driver"]);
     }
-    public function viewCustomerIndex(){
-
-        $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
-
-        return view('customer.view-customers',['title'=>"View Customer",'customers'=>$customers]);
-    }
-
     public function viewUsersIndex(){
 
-        $customers=User::find(Auth::user()->iduser_master);
+        $users=User::where('status',1)->where('user_role_iduser_role','!=',1)->get();
 
-        return view('customer.view-customers',['title'=>"View Customer",'customer'=>$customers]);
+        return view('employee.view-users',['title'=>"View Users",'users'=>$users]);
+    }
+
+    public function viewCustomersIndex(){
+
+        $customer=User::find(Auth::user()->iduser_master);
+     
+        return view('employee.view-customers',['title'=>"View Customer",'customer'=>$customer]);
     }
     
 
@@ -35,14 +35,12 @@ class UserController extends Controller
 
             'fName' => 'required|max:115',
             'lName' => 'required|max:115',
-           
             'contactNo' => 'required|max:10|min:10',
             'username' => 'required|email',
             'password' => 'required|min:9',
             
         ], [
             'fName.required' => 'First Name should be provided!',
-            
             'fName.max' => 'Last Name must be less than 115 characters.',
             'lName.required' => 'Last Name should be provided!',
             'lName.max' => 'Last Name must be less than 115 characters.',
@@ -60,20 +58,20 @@ class UserController extends Controller
 
         }
 
+        if (User::where('username',strtolower($request['username']))->first()) {
+            return response()->json(['errorUser' => ['error' => 'User Name already exists.']]);
+        }
+
         $save=new User();
-    
         $save->first_name=strtoupper($request['fName']);
         $save->last_name=strtoupper($request['lName']);
         $save->contact_no=$request['contactNo'];
-        $save->email=strtolower($request['email']);
         $save->username=$request['username'];
         $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request['password'],"Nova6566", 256));
         $save->password=$advanceEncryption->encrypt();
         $save->status=1;
         $save->user_role_iduser_role=3;
         $save->save();
-
-      
 
         return response()->json(['success' => 'Driver saved successfully.']);
         
@@ -86,14 +84,13 @@ class UserController extends Controller
 
                 'fName' => 'required|max:115',
                 'lName' => 'required|max:115',
-               
                 'contactNo' => 'required|max:10|min:10',
                 'username' => 'required|email',
                 'password' => 'required|min:9',
+                'address' => 'required|max:200',
                 
             ], [
                 'fName.required' => 'First Name should be provided!',
-                
                 'fName.max' => 'Last Name must be less than 115 characters.',
                 'lName.required' => 'Last Name should be provided!',
                 'lName.max' => 'Last Name must be less than 115 characters.',
@@ -104,6 +101,8 @@ class UserController extends Controller
                 'username.email' => 'User name should be valid email address!',
                 'password.max' => 'Password must be include 9 number.',
                 'password.required' => 'Password should be provided.',
+                'address.required' => 'Address should be provided!',
+                'address.max' => 'Address must be less than 200 characters.',
                 
             ]);
             if ($validator->fails()) {
@@ -111,20 +110,21 @@ class UserController extends Controller
     
             }
     
+            if (User::where('username',strtolower($request['username']))->first()) {
+                return response()->json(['errorUser' => ['error' => 'User Name already exists.']]);
+            }
+
             $save=new User();
-        
             $save->first_name=strtoupper($request['fName']);
             $save->last_name=strtoupper($request['lName']);
             $save->contact_no=$request['contactNo'];
-            $save->email=strtolower($request['email']);
             $save->username=$request['username'];
+            $save->address=$request['address'];
             $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request['password'],"Nova6566", 256));
             $save->password=$advanceEncryption->encrypt();
             $save->status=1;
             $save->user_role_iduser_role=2;
             $save->save();
-    
-          
     
             return response()->json(['success' => 'Customer saved successfully.']);
 
@@ -179,35 +179,38 @@ class UserController extends Controller
 
                 'fName' => 'required|max:115',
                 'lName' => 'required|max:115',
-                'email' => 'required',
+                'username' => 'required',
                 'contactNo' => 'required|max:10|min:10',
-                'nicNo' => 'required',
-              
+                'address' => 'required|max:200',
                 
             ], [
                 'fName.required' => 'First Name should be provided!',
-                'email.required' => 'Email should be provided!',
+                'username.required' => 'Username should be provided!',
                 'fName.max' => 'Last Name must be less than 115 characters.',
                 'lName.required' => 'Last Name should be provided!',
                 'lName.max' => 'Last Name must be less than 115 characters.',
                 'contactNo.required' => 'Contact No should be provided!',
                 'contactNo.max' => 'Contact No must be include 10 number.',
                 'contactNo.min' => 'Contact No must be include 10 number.',
-                'nicNo.required' => 'NIC should be provided!',
                
-                
+                'address.required' => 'Address should be provided!',
+                'address.max' => 'Address must be less than 200 characters.',
             ]);
             if ($validator->fails()) {
                 return response()->json(['errors' =>$validator->errors()]);
     
+            }
+
+            if (User::where('username',strtolower($request['username']))->where('iduser_master','!=',$request['hiddenUID'])->first()) {
+                return response()->json(['errorUser' => ['error' => 'User Name already exists.']]);
             }
     
             $update=User::find($request['hiddenUID']);
             $update->first_name=strtoupper($request['fName']);
             $update->last_name=strtoupper($request['lName']);
             $update->contact_no=$request['contactNo'];
-            $update->email=strtolower($request['email']);
-            $update->nic=$request['nicNo'];
+            $update->username=strtolower($request['username']);
+            $update->address=strtolower($request['address']);
             $update->save();
     
           

@@ -50,7 +50,7 @@ class GRNController extends Controller
 
         $categoryId=$request['categoryId'];
 
-        $products=Product::where('status',1)->where('master_company',Auth::user()->master_company)->where('category_idcategory',$categoryId)->get();
+        $products=Product::where('status',1)->where('category_idcategory',$categoryId)->get();
         $options="";
         $options .= "<option value='' selected disabled>" . 'Select Product'. "</option>";
         foreach ($products as $product) {

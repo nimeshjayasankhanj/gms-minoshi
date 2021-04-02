@@ -12,8 +12,7 @@
 <!-- Plugins css -->
 <link href="{{ URL::asset('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css') }}"
     rel="stylesheet">
-<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}"
-    rel="stylesheet">
+<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
 <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ URL::asset('assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}"
     rel="stylesheet" />
@@ -69,16 +68,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (isset($acceptedBooking))
-                                        @if (count($acceptedBooking) > 0)
-                                            @foreach ($acceptedBooking as $accepted)
+                                    @if (isset($assignWorks))
+                                        @if (count($assignWorks) > 0)
+                                            @foreach ($assignWorks as $assignWork)
                                                 <tr>
-                                                    <td>{{ str_pad($accepted->idmaster_booking, 5, '0', STR_PAD_LEFT) }}
+                                                    <td>{{ str_pad($assignWork->idmaster_booking, 5, '0', STR_PAD_LEFT) }}
                                                     </td>
-                                                    <td>{{ $accepted->User->first_name }}
-                                                        {{ $accepted->User->last_name }}</td>
-                                                    <td>{{ $accepted->created_at->toDateString() }}</td>
-                                                    <td>{{ number_format($accepted->total, 2) }}</td>
+                                                    <td>{{ $assignWork->User->first_name }}
+                                                        {{ $assignWork->User->last_name }}</td>
+                                                    <td>{{ $assignWork->created_at->toDateString() }}</td>
+                                                    <td>{{ number_format($assignWork->total, 2) }}</td>
                                                     <td>
                                                         <div class="dropdown">
                                                             <button
@@ -90,27 +89,12 @@
                                                             </button>
                                                             <div class="dropdown-menu"
                                                                 aria-labelledby="dropdownMenuButton">
-                                                                <a href="#" class="dropdown-item" data-toggle="modal"
-                                                                    data-id="{{ $accepted->idmaster_booking }}"
-                                                                    id="bookingId" data-target="#viewItems">View
-                                                                    Items</i>
+                                                                
+
+                                                                <a href="#" class="dropdown-item"
+                                                                    onclick="deliveredOrder({{ $assignWork->idmaster_booking }})">Mark
+                                                                    as Deliverd</i>
                                                                 </a>
-
-                                                                @if ($accepted->driver == null)
-                                                                <a href="#" class="dropdown-item" data-toggle="modal"
-                                                                    data-id="{{ $accepted->idmaster_booking }}"
-                                                                    id="assignDriverId"
-                                                                    data-target="#assignDriver">Assign Driver</i>
-                                                                </a>
-                                                                @endif
-
-                                                                @if ($accepted->driver != null)
-                                                                    <a class="dropdown-item"
-                                                                        href="{{ route('generate-invoice', ['idOrder' => $accepted->idmaster_booking]) }}">Generate
-                                                                        Invoice</a>
-
-                                                                @endif
-
 
                                                             </div>
                                                         </div>
@@ -133,81 +117,7 @@
 </div> <!-- content -->
 
 
-<div class="modal fade" id="assignDriver" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title mt-0">Assign Driver</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                </button>
-            </div>
-            <div class="modal-body">
 
-                <div class="form-group">
-                    <label>Driver <span style="color: red"> *</span></label>
-                    <select class="form-control select2 tab" name="driver" id="driver" required>
-                        <option value="" disabled selected>Select Driver
-                        </option>
-                        @if (isset($drivers))
-                            @foreach ($drivers as $driver)
-                                <option value="{{ "$driver->iduser_master" }}">{{ $driver->first_name }}
-                                    {{ $driver->last_name }}
-                                </option>
-                            @endforeach
-                        @endif
-
-                    </select>
-                    <span class="text-danger" id="driverError"></span>
-                </div>
-                <input type="hidden" id="bookingId" name="bookingId" />
-                <div class="row">
-                    <div class="col-lg-4" style="padding-top: 14px">
-                        <button type="button" class="btn btn-primary waves-effect " onclick="saveDriver()">
-                            Save Driver</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="viewItems" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title mt-0">View Items</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-
-                        <div class="table-rep-plugin">
-                            <div class="table-responsive b-0" data-pattern="priority-columns">
-                                <table class="table table-striped table-bordered" cellspacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>ITEM</th>
-                                            <th>QTY</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody id="viewItem">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<iframe style="display: none;" id="iframeprint" src=""></iframe>
 
 @include('includes/footer_start')
 
@@ -263,25 +173,6 @@
         });
 
     });
-
-    function print(id) {
-        let _this = this,
-            iframeId = 'iframeprint',
-            $iframe = $('iframe#iframeprint');
-        $iframe.attr('src', 'print_barcode/' + id);
-
-        $iframe.load(function() {
-            _this.callPrint(iframeId);
-        });
-    }
-
-    function callPrint(iframeId) {
-        let PDF = document.getElementById(iframeId);
-        PDF.focus();
-        PDF.contentWindow.print();
-    }
-
-
     $(document).on("wheel", "input[type=number]", function(e) {
         $(this).blur();
     });
@@ -292,25 +183,16 @@
         });
     });
 
-    $(document).on('click', '#bookingId', function() {
-        var bookingId = $(this).data("id");
-
-        $.post('viewItemList', {
-            bookingId: bookingId
-        }, function(data) {
-            console.log(data)
-            $('#viewItem').html(data.tableData);
-        });
-    });
+  
 
 
-    function completedOrder(id) {
+    function deliveredOrder(id) {
 
         swal({
-                title: 'Do you really want to completed this Order?',
+                title: 'Do you really want to completed this task?',
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, Approved!',
+                confirmButtonText: 'Yes, Completed!',
                 cancelButtonText: 'No, cancel!',
                 confirmButtonClass: 'btn btn-primary waves-effect',
                 cancelButtonClass: 'btn btn-danger waves-effect',
@@ -320,7 +202,7 @@
 
                     type: 'POST',
 
-                    url: " {{ route('completedOrder') }}",
+                    url: " {{ route('deliveredOrder') }}",
 
                     data: {
                         id: id
@@ -330,7 +212,7 @@
 
                         notify({
                             type: "success", //alert | success | error | warning | info
-                            title: 'BOOKING APPROVED',
+                            title: 'DELIVERED',
                             autoHide: true, //true | false
                             delay: 2500, //number ms
                             position: {
@@ -353,72 +235,6 @@
             }
 
     }
-
-
-    $(document).on('click', '#assignDriverId', function() {
-        var bookingId = $(this).data("id");
-
-        $("#bookingId").val(bookingId);
-    });
-
-    function saveDriver() {
-
-        var driver = $("#driver").val();
-        var bookingId = $("#bookingId").val();
-
-        $.post('assignDriver', {
-            driver: driver,
-            bookingId: bookingId
-        }, function(data) {
-            if (data.errors != null) {
-
-                if (data.errors.driver) {
-                    var p = document.getElementById('driverError');
-                    p.innerHTML = data.errors.driver;
-
-                }
-
-
-            }
-            if (data.success != null) {
-
-                notify({
-                    type: "success", //alert | success | error | warning | info
-                    title: 'DRIVER SAVED',
-                    autoHide: true, //true | false
-                    delay: 2500, //number ms
-                    position: {
-                        x: "right",
-                        y: "top"
-                    },
-                    icon: '<img src="{{ URL::asset('assets/images/correct.png') }}" />',
-
-                    message: data.success,
-                });
-
-
-                setTimeout(function() {
-                    $('#assignDriver').modal('hide');
-                }, 200);
-                location.reload();
-            }
-        })
-    }
-
-    function generateBarcode(bookigId) {
-        $.post('generateBarCode', {
-            bookigId: bookigId
-        }, function(data) {
-            location.reload();
-        })
-    }
-
-
-    $('.modal').on('hidden.bs.modal', function() {
-
-        $('#driverError').html('');
-
-    });
 
 </script>
 

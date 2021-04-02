@@ -17,7 +17,9 @@ class User extends Authenticatable
         return $this->hasMany(MasterBooking::class,'user_master_iduser_master');
     }
 
-    
+    public function UserRole(){
+        return $this->belongsTo(UserRole::class,'user_role_iduser_role');
+    }
 
     
 }

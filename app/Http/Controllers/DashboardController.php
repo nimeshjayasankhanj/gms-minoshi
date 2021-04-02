@@ -16,15 +16,27 @@ use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
-        public function index(){
+    public function index()
+    {
 
-          
-            $Pending=MasterBooking::where('status',0)->sum('idmaster_booking');
-            $accepted=MasterBooking::where('status',1)->sum('idmaster_booking');
-            $completed=MasterBooking::where('status',2)->sum('idmaster_booking');
+        if (Auth::user()->user_role_iduser_role == 2) {
+            $Pending = MasterBooking::where('status', 0)->where('user_master_iduser_master', Auth::user()->iduser_master)->count('idmaster_booking');
+            $accepted = MasterBooking::where('status', 1)->where('user_master_iduser_master', Auth::user()->iduser_master)->count('idmaster_booking');
+            $completed = MasterBooking::where('status', 2)->where('user_master_iduser_master', Auth::user()->iduser_master)->count('idmaster_booking');
 
-            return view('index',['title'=>'Dashboard','Pending'=>$Pending,'accepted'=>$accepted,'completed'=>$completed]);
+            return view('index', ['title' => 'Dashboard', 'Pending' => $Pending, 'accepted' => $accepted, 'completed' => $completed]);
+        } else if (Auth::user()->user_role_iduser_role == 1) {
+            $Pending = MasterBooking::where('status', 0)->count('idmaster_booking');
+            $accepted = MasterBooking::where('status', 1)->count('idmaster_booking');
+            $completed = MasterBooking::where('status', 2)->count('idmaster_booking');
 
+            return view('index', ['title' => 'Dashboard', 'Pending' => $Pending, 'accepted' => $accepted, 'completed' => $completed]);
+        } else if (Auth::user()->user_role_iduser_role == 3) {
+            $Pending = MasterBooking::where('status', 0)->count('idmaster_booking');
+            $accepted = MasterBooking::where('status', 1)->count('idmaster_booking');
+            $completed = MasterBooking::where('status', 2)->count('idmaster_booking');
 
-        }    
+            return view('index', ['title' => 'Dashboard', 'Pending' => $Pending, 'accepted' => $accepted, 'completed' => $completed]);
+        }
+    }
 }

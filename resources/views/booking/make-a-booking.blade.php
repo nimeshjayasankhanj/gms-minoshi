@@ -95,7 +95,7 @@
 
                                         <input type="number" class="form-control" readonly name="availableQty"
                                             id="availableQty" placeholder="0.00" />
-                                        <small class="text-danger" id="cPriceError"></small>
+                                       
                                     </div>
                                 </div>
 
@@ -108,7 +108,7 @@
 
                                         <input type="number" class="form-control" name="qty" id="qty"
                                             oninput="this.value = Math.abs(this.value);uMaxQty()" placeholder="0.00" />
-                                        <small class="text-danger" id="cPriceError"></small>
+                                            <small class="text-danger" id="cPriceError"></small>
                                     </div>
                                 </div>
                                 <div class="col-lg-3" style="padding-top: 34px">

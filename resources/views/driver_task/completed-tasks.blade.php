@@ -24,7 +24,6 @@
 
 @include('includes/header_end')
 
-
 <!-- Page title -->
 <ul class="list-inline menu-left mb-0">
     <li class="list-inline-item">
@@ -46,85 +45,58 @@
 <!-- ==================
      PAGE CONTENT START
      ================== -->
+
 <div class="page-content-wrapper">
 
     <div class="container-fluid">
-
         <div class="col-lg-12">
             <div class="card m-b-20">
                 <div class="card-body">
 
-                    <form action="{{ route('active-stock') }}" method="get">
-                        {{ csrf_field() }}
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group">
 
-                                    <select class="form-control select2" name="productId" id="productId">
-                                        <option value="" selected> Select Product
-                                        </option>
-                                        @if (isset($products))
-                                            @foreach ($products as $product)
-                                                <option value="{{ "$product->idproduct" }}">
-                                                    {{ "$product->product_name" }}</option>
-                                            @endforeach
-                                        @endif
-
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-                            <div class="col-lg-4">
-                                <div class="form-group row">
-                                    <div class="col-sm-10">
-                                        <button type="submit" id="saveBtn" class="btn btn-primary">Search</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                     <div class="table-rep-plugin">
                         <div class="table-responsive b-0" data-pattern="priority-columns">
-                            <table id="datatable" class="table table-striped table-bordered data-table" cellspacing="0"
+                            <table id="datatable" class="table table-striped table-bordered" cellspacing="0"
                                 width="100%">
                                 <thead>
                                     <tr>
-
-                                        <th>PRODUCT</th>
-                                        <th style="text-align: right">QTY</th>
-                                        <th style="text-align: right">AVAILABLE QTY</th>
-                                        <th style="text-align: right">BUYING PRICE</th>
-
+                                        <th>BOOKING ID</th>
+                                        <th>CUSTOMER NAME</th>
+                                        <th>ORDER DATE</th>
+                                        <th>AMOUNT</th>
+                                       
                                     </tr>
                                 </thead>
-
                                 <tbody>
-
-                                    @if (count($stocks) != 0)
-
-                                        @foreach ($stocks as $stock)
-                                            <tr>
-                                                <td>{{ $stock->Product->product_name }}</td>
-                                                <td style="text-align: right"> {{ number_format($stock->qty_grn, 2) }}
-                                                </td>
-                                                <td style="text-align: right">
-                                                    {{ number_format($stock->qty_available, 2) }}</td>
-                                                <td style="text-align: right">{{ number_format($stock->bp, 2) }}</td>
-                                            </tr>
-                                        @endforeach
+                                    @if (isset($assignWorks))
+                                        @if (count($assignWorks) > 0)
+                                            @foreach ($assignWorks as $assignWork)
+                                                <tr>
+                                                    <td>{{ str_pad($assignWork->idmaster_booking, 5, '0', STR_PAD_LEFT) }}
+                                                    </td>
+                                                    <td>{{ $assignWork->User->first_name }}
+                                                        {{ $assignWork->User->last_name }}</td>
+                                                    <td>{{ $assignWork->created_at->toDateString() }}</td>
+                                                    <td>{{ number_format($assignWork->total, 2) }}</td>
+                                                   
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     @endif
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div><!-- container -->
+
+</div> <!-- Page content Wrapper -->
+
+</div> <!-- content -->
+
+
 
 
 @include('includes/footer_start')
@@ -169,20 +141,32 @@
 <script type="text/javascript" src="{{ URL::asset('assets/plugins/parsleyjs/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('assets/js/bootstrap-notify.js') }}"></script>
 <script src="{{ URL::asset('assets/js/jquery.notify.min.js') }}"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
+        $('form').parsley();
 
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
     });
-    $(document).on('focus', ':input', function() {
-        $(this).attr('autocomplete', 'off');
+    $(document).on("wheel", "input[type=number]", function(e) {
+        $(this).blur();
     });
+
+    $(document).ready(function() {
+        $(document).on('focus', ':input', function() {
+            $(this).attr('autocomplete', 'off');
+        });
+    });
+
+  
+
 
 </script>
 
 
-@include('includes.footer_end')
+@include('includes/footer_end')

@@ -139,7 +139,7 @@ class ReportController extends Controller
                 $query = $query->where('date',$date);
             }
             
-            $orders = $query->where('status', 2)->get();
+            $orders = $query->where('status', 3)->get();
        
             $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
 

@@ -60,6 +60,11 @@
                                         <small class="text-danger" id="NIcError"></small>
                                     </div>
                                     <div class="form-group">
+                                        <label for="pass">Address</label>
+                                        <input type="text" class="form-control" id="address" autocomplete="off" name="address" placeholder="Address">
+                                        <small class="text-danger" id="addressError"></small>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="pass">Password</label>
                                         <input type="password" class="form-control" id="password" autocomplete="off" name="password" placeholder="Enter password">
                                         <small class="text-danger" id="passwordError"></small>
@@ -123,7 +128,13 @@
                         type: 'POST',
                         data: $(this).serialize(),
                         success: function (data) {
-
+                            console.log(data.errorUser)
+                            if(data.errorUser){
+                               
+                                    var p = document.getElementById('NIcError');
+                                    p.innerHTML = data.errorUser.error;
+                                
+                            }
                             if (data.errors != null) {
 
                               
@@ -153,6 +164,10 @@
                                 if(data.errors.password) {
                                     var p = document.getElementById('passwordError');
                                     p.innerHTML = data.errors.password[0];
+                                }
+                                if(data.errors.address) {
+                                    var p = document.getElementById('addressError');
+                                    p.innerHTML = data.errors.address[0];
                                 }
 
 

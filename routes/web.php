@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth', 'prefix' => ''], function () {
     
 
     Route::get('/index', 'DashboardController@index')->name('index');
-   
+    Route::post('/viewItemList', 'BookingController@viewItemList')->name('viewItemList');
 
     Route::get('/logout', 'SecurityController@logoutNow')->name('logout');
     Route::post('/activateDeactivate', 'CommonController@activateDeactivate')->name('activateDeactivate');
@@ -50,18 +50,24 @@ Route::group(['middleware' => 'auth', 'prefix' => ''], function () {
      Route::post('/editTempBooking', 'CustomerBookingController@editTempBooking')->name('editTempBooking');
      Route::post('/saveBooking', 'CustomerBookingController@saveBooking')->name('saveBooking');
  
-    
+     Route::get('/pending-tasks', 'TaskController@pendingTasks')->name('pending-tasks');
+     Route::get('/completed-tasks', 'TaskController@completedTasks')->name('completed-tasks');
+     Route::post('/deliveredOrder', 'TaskController@deliveredOrder')->name('deliveredOrder');
+ 
+     
+
     Route::group(['middleware' => 'customer', 'prefix' => ''], function () {
     
    
         
     //booking details
+   
     Route::get('/completed-cus-works', 'CustomerBookingController@completedCusWorksIndex')->name('completed-cus-works');
     Route::get('/pending-cus-works', 'CustomerBookingController@pendingCusWorks')->name('pending-cus-works');
     Route::get('/test-page', 'TestController@testPage')->name('test-page');
 
      //user
-     Route::get('/view-cus-customers', 'UserController@viewCustomersIndex')->name('view-cus-customers');
+     Route::get('/view-customers', 'UserController@viewCustomersIndex')->name('view-customers');
      Route::post('/updatePassword', 'UserController@updatePassword')->name('updatePassword');
      Route::post('/updateUser', 'UserController@updateUser')->name('updateUser');
      Route::post('/getUserById', 'UserController@getUserById')->name('getUserById');
@@ -80,7 +86,10 @@ Route::group(['middleware' => 'auth', 'prefix' => ''], function () {
     Route::get('/add-employee', 'UserController@addemployeeIndex')->name('add-customer');
     Route::post('/saveDriver', 'UserController@saveDriver')->name('saveDriver');
     Route::get('/view-users', 'UserController@viewUsersIndex')->name('view-users');
-
+    Route::post('/updatePassword', 'UserController@updatePassword')->name('updatePassword');
+    Route::post('/updateUser', 'UserController@updateUser')->name('updateUser');
+    Route::post('/getUserById', 'UserController@getUserById')->name('getUserById');
+  
     //categories
     Route::get('/categories', 'CategoryController@categories')->name('categories');
     Route::post('/saveCategory', 'CategoryController@save')->name('saveCategory');
@@ -128,17 +137,18 @@ Route::group(['middleware' => 'auth', 'prefix' => ''], function () {
 
     //bbooking
     Route::get('/pending-works', 'BookingController@pendingWorksIndex')->name('pending-works');
-    Route::post('/viewItemList', 'BookingController@viewItemList')->name('viewItemList');
     Route::post('/approvedOrder', 'BookingController@approvedOrder')->name('approvedOrder');
+    Route::post('/assignDriver', 'BookingController@assignDriver')->name('assignDriver');
 
     Route::get('/accepted-works', 'BookingController@acceptedWorksIndex')->name('accepted-works');
     Route::post('/completedOrder', 'BookingController@completedOrder')->name('completedOrder');
     Route::get('/completed-works', 'BookingController@completeWorksIndex')->name('completed-works');
     Route::post('/generateBarCode', 'BookingController@generateBarCode')->name('generateBarCode');
     Route::get('/generate-invoice', 'BookingController@generateInvoiceIndex')->name('generate-invoice');
-    
     Route::get('print_barcode/{id}', 'BookingController@printBarcode')->name('print_barcode');
+    Route::get('/delivered-works', 'BookingController@deliveredWorksIndex')->name('delivered-works');
    
+    
     
     //invoice
     Route::post('/tableInvoiceData', 'InvoiceController@tableInvoiceData')->name('tableInvoiceData');

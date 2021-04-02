@@ -81,6 +81,9 @@
                                         {{--<a class="dropdown-product" href="#"><span class="badge badge-success pull-right m-t-5">5</span><i class="dripicons-gear text-muted"></i> Settings</a>--}}
                                         {{--<a class="dropdown-product" href="#"><i class="dripicons-lock text-muted"></i> Lock screen</a>--}}
                                         {{--<div class="dropdown-divider"></div>--}}
+                                        <a class="dropdown-item" href="#"><em
+                                            class="mdi mdi-account"></em>&nbsp;{{\Illuminate\Support\Facades\Auth::user()->first_name}}
+                                </a>
                                         <a class="dropdown-item" href="logout"><i class="dripicons-exit text-muted"></i> Logout</a>
                                     </div>
                                 </li>

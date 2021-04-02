@@ -59,51 +59,54 @@
                                 <tr>
                                     <th>FIRST NAME</th>
                                     <th>LAST NAME</th>
-                                    <th>NIC</th>
                                     <th>CONTACT NO</th>
-                                    <th>EMAIL</th>
+                                    <th>USERNAME</th>
+                                    <th>USER ROLE</th>
                                     <th>EDIT</th>
-                                    <th>UPDATE PASSWORD</th>
+                                    <th>EDIT PASSWORD</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                               
                                     
-                                  
-                                        <tr>
-                                            <td>{{$customer->first_name}}</td>
-                                            <td>{{$customer->last_name}}</td>
-                                            <td>{{$customer->nic}}</td>
-                                            <td>{{$customer->contact_no}}</td>
-                                            <td>{{$customer->email}}</td>
-                                           <td>
+                                  @foreach ($users as $user)
+                                  <tr>
+                                    <td>{{$user->first_name}}</td>
+                                    <td>{{$user->last_name}}</td>
+                                   
+                                    <td>{{$user->contact_no}}</td>
+                                    <td>{{$user->username}}</td>
+                                    <td>{{$user->UserRole->user_role}}</td>
+                                    @if ($user->user_role_iduser_role!=2)
+                                    <td>
 
-                                                    <p>
-                                                        <button type="button"
-                                                                class="btn btn-sm btn-warning  waves-effect waves-light"
-                                                                data-toggle="modal"
-                                                                data-id="{{ $customer->iduser_master}}"
-                                                              
-                                                                id="uEmployee"
-                                                                data-target="#employeeModal"><i
-                                                                    class="fa fa-edit"></i>
-                                                        </button>
-                                                    </p>
-                                            </td>
-                                            <td>
-                                                <p style="text-align: center">
-                                                    <button type="button"
-                                                            class="btn btn-sm btn-warning  waves-effect waves-light"
-                                                            data-toggle="modal"
-                                                            id="uPasswordId"
-                                                            data-id="{{ $customer->iduser_master }}"
-                                                            data-target="#passUpModal"
-                                                    ><i
-                                                                class="mdi mdi-key"></i></button>
-                                                </p>
-                                            </td>
-                                        </tr>
+                                        <p>
+                                            <button type="button"
+                                                class="btn btn-sm btn-warning  waves-effect waves-light"
+                                                data-toggle="modal" data-id="{{ $user->iduser_master }}"
+                                                id="uEmployee" data-target="#employeeModal"><i
+                                                    class="fa fa-edit"></i>
+                                            </button>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p style="text-align: center">
+                                            <button type="button"
+                                                class="btn btn-sm btn-warning  waves-effect waves-light"
+                                                data-toggle="modal" id="uPasswordId"
+                                                data-id="{{ $user->iduser_master }}"
+                                                data-target="#passUpModal"><i class="mdi mdi-key"></i></button>
+                                        </p>
+                                    </td>
+                                    @else
+                                    <td></td>
+                                    <td></td>
+                                    @endif
+                                    
+                                </tr>
+                                  @endforeach
+                                        
                                    
                                 </tbody>
                             </table>
@@ -290,24 +293,24 @@
 
     });
 
-    $(document).on('click', '#uEmployee', function () {
+    $(document).on('click', '#uEmployee', function() {
         var userId = $(this).data("id");
-        $.post('getUserById',{
-            userId:userId
-        },function(data){
+        $.post('getUserById', {
+            userId: userId
+        }, function(data) {
+            console.log(data)
             $("#fName").val(data.first_name);
             $("#lName").val(data.last_name);
             $("#contactNo").val(data.contact_no);
-            $("#email").val(data.email);
-            $("#nicNo").val(data.nic);
+            $("#username").val(data.username);
+            $("#address").val(data.address);
             $("#hiddenUID").val(data.iduser_master);
-           
+
         })
     });
 
     
-
-    $('.modal').on('hidden.bs.modal', function () {
+    $('.modal').on('hidden.bs.modal', function() {
 
 $("input").val('');
 
@@ -325,10 +328,11 @@ $('#contactNoError').html('');
 $('#employeeTypeError').html('');
 $('#usernameError').html('');
 $('#passwordError').html('');
-
-
+$("#address").html('');
+$("#usernameError").html('');
 });
-    function editPassword() {
+
+function editPassword() {
 
 
 $('#errorAlert2').hide();
@@ -345,10 +349,10 @@ $.post('updatePassword', {
     hiddenPID: hiddenPID,
     compass: compass
 
-}, function (data) {
+}, function(data) {
     if (data.errors != null) {
         $('#errorAlert2').show();
-        $.each(data.errors, function (key, value) {
+        $.each(data.errors, function(key, value) {
             $('#errorAlert2').append('<p>' + value + '</p>');
         });
 
@@ -363,12 +367,12 @@ $.post('updatePassword', {
                 x: "right",
                 y: "top"
             },
-            icon: '<img src="{{ URL::asset('assets/images/correct.png')}}" />',
+            icon: '<img src="{{ URL::asset('assets/images/correct.png') }}" />',
 
             message: data.success,
         });
 
-        setTimeout(function () {
+        setTimeout(function() {
             $('#passUpModal').modal('hide');
         }, 200);
     }
@@ -377,81 +381,83 @@ $.post('updatePassword', {
 }
 
 
-$("#updateUserId").on("submit", function (event) {
-              
-             
+$("#updateUserId").on("submit", function(event) {
 
-              $("#fNameError").html('');
-              $("#emailError").html('');
-              $("#lNameError").html('');
-              $("#contactNoError").html('');
-              $("#NIcError").html('');
-             
-              event.preventDefault();
 
-                  $.ajax({
-                      url: '{{route('updateUser')}}',
-                      type: 'POST',
-                      data: $(this).serialize(),
-                      success: function (data) {
 
-                          if (data.errors != null) {
+$("#fNameError").html('');
+$("#emailError").html('');
+$("#lNameError").html('');
+$("#contactNoError").html('');
+$("#address").html('');
+$("#usernameError").html('');
+event.preventDefault();
 
-                            
+$.ajax({
+    url: '{{ route('updateUser') }}',
+    type: 'POST',
+    data: $(this).serialize(),
+    success: function(data) {
 
-                              if(data.errors.fName) {
-                                  var p = document.getElementById('fNameError');
-                                  p.innerHTML = data.errors.fName[0];
-                              }
-                              if(data.errors.email) {
-                                  var p = document.getElementById('emailError');
-                                  p.innerHTML = data.errors.email[0];
-                              }
-                              
-                              if(data.errors.lName) {
-                                      var p = document.getElementById('lNameError');
-                                      p.innerHTML = data.errors.lName[0];
-                              }
-                              if(data.errors.contactNo) {
-                                  var p = document.getElementById('contactNoError');
-                                  p.innerHTML = data.errors.contactNo[0];
-                              }
-                          
-                              if(data.errors.nicNo) {
-                                  var p = document.getElementById('NIcError');
-                                  p.innerHTML = data.errors.nicNo[0];
-                              }
-                           
+        if (data.errors != null) {
 
-                          }
 
-                          if (data.success != null) {
-                             
 
-                              notify({
-                              type: "success", //alert | success | error | warning | info
-                              title: 'CUSTOMER UPDATED',
-                              autoHide: true, //true | false
-                              delay: 2500, //number ms
-                              position: {
-                                  x: "right",
-                                  y: "top"
-                              },
-                              icon: '<img src="{{ URL::asset('assets/images/correct.png')}}" />',
+            if (data.errors.fName) {
+                var p = document.getElementById('fNameError');
+                p.innerHTML = data.errors.fName[0];
+            }
+            if (data.errors.email) {
+                var p = document.getElementById('emailError');
+                p.innerHTML = data.errors.email[0];
+            }
 
-                              message: data.success,
-                              });
+            if (data.errors.lName) {
+                var p = document.getElementById('lNameError');
+                p.innerHTML = data.errors.lName[0];
+            }
+            if (data.errors.contactNo) {
+                var p = document.getElementById('contactNoError');
+                p.innerHTML = data.errors.contactNo[0];
+            }
 
-                              setTimeout(function () {
-                                location.reload();
-                               }, 200);
-                             
-                          }
-                      } 
-                  });
-              }
-          );
+            if (data.errors.address) {
+                var p = document.getElementById('addressError');
+                p.innerHTML = data.errors.address[0];
+            }
+            if (data.errors.username) {
+                var p = document.getElementById('usernameError');
+                p.innerHTML = data.errors.username[0];
+            }
 
+
+        }
+
+        if (data.success != null) {
+
+
+            notify({
+                type: "success", //alert | success | error | warning | info
+                title: 'CUSTOMER UPDATED',
+                autoHide: true, //true | false
+                delay: 2500, //number ms
+                position: {
+                    x: "right",
+                    y: "top"
+                },
+                icon: '<img src="{{ URL::asset('assets/images/correct.png') }}" />',
+
+                message: data.success,
+            });
+
+            setTimeout(function() {
+                location.reload();
+            }, 200);
+
+        }
+    }
+});
+});
 </script>
 
 

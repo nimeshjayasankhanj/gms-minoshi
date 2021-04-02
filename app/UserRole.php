@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserRole extends Model
 {
-    protected $table='meta_user_role';
-    protected $primaryKey='idMeta_User_Role';
+    protected $table='user_role';
+    protected $primaryKey='iduser_role';
 
     public function User(){
-        return $this->hasMany(User::class,'Meta_User_Role');
+        return $this->hasMany(User::class,'user_role_iduser_role');
     }
 
 }
