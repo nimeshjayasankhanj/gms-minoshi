@@ -39,9 +39,9 @@
                 {{--<form class="form-horizontal m-t-30" action="{{ route('authenticate') }}" method="POST">--}}
 
                     <div class="form-group">
-                        <label for="username">NIC</label>
+                        <label for="username">Username</label>
                         <input type="text" class="form-control" id="username" name="username"
-                               placeholder="Enter NIC">
+                               placeholder="Username">
                         <small class="text-danger">{{ $errors->first('username') }}</small>
                     </div>
 
@@ -64,7 +64,8 @@
                     <div class="form-group mb-0 row">
                         <div class="col-12">
                             <p style="text-align: center">Not a member yet? <a href="{{ URL::asset('sign-up')}}" class="text-muted">Sign Up</a></p>
-                            
+                            <p style="text-align: center"><a href="{{ URL::asset('forget-password')}}" class="text-muted">Forget Password</a></p>
+                           
                         </div>
                     </div>
                 </form>

@@ -21,11 +21,15 @@ Route::post('/loginMy', 'SecurityController@signin')->name('loginMy');
 
 //User Management
 Route::post('/saveUser', 'UserController@save')->name('saveUser');
+Route::post('/resetPassword', 'UserController@resetPassword')->name('resetPassword');
+
 Route::get('/sign-up', function () {
     return view('sign-up', ['title' => 'Sign Up']);
 });
 
-
+Route::get('/forget-password', function () {
+    return view('forget_password.forget-password', ['title' => 'Forget Password']);
+});
 
 Route::group(['middleware' => 'auth', 'prefix' => ''], function () {
     
